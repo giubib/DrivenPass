@@ -1,6 +1,5 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -15,12 +14,12 @@ model User {
   password   String
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
-  Credencial Credencial[]
+  Credential Credential[]
 
   @@map("users")
 }
 
-model Credencial {
+model Credential {
   id        Int      @id @default(autoincrement())
   userId    Int
   user      User     @relation(fields: [userId], references: [id])
