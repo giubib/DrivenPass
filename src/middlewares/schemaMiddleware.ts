@@ -1,8 +1,8 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction, RequestHandler } from "express";
 import { ObjectSchema } from "joi";
 
-export function validateSchema(schema: ObjectSchema) {
-  return (req: Request, res: Response, next: NextFunction): void => {
+export function validateSchema(schema: ObjectSchema): RequestHandler {
+  return (req: Request, res: Response, next: NextFunction) => {
     const { error } = schema.validate(req.body, { abortEarly: false });
 
     if (error) {
@@ -11,8 +11,9 @@ export function validateSchema(schema: ObjectSchema) {
         message: "Validation failed",
         errors: errorMessages,
       });
+      return; 
     }
 
-    next();
+    next(); 
   };
 }

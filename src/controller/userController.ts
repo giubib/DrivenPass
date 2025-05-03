@@ -29,6 +29,7 @@ async function handleSignIn(req: Request, res: Response, next: NextFunction): Pr
     next(error);
   }
 }
+
 async function handleDeleteAccount(req: Request, res: Response, next: NextFunction): Promise<void> {
   const userId = res.locals.userId as number;
   try {

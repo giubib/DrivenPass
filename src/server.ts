@@ -1,10 +1,10 @@
-import "./config/envs";
+
 import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
 import "express-async-errors";
 import errorHandler from "./middlewares/errorMiddleware";
-import authRouter from "./routers/userRouter";
+import userRouter from "./routers/userRouter";
 import credentialRouter from "./routers/credentialRouter";
 
 dotenv.config();
@@ -15,10 +15,10 @@ app.use(cors());
 app.use(express.json());
 
 app.get("/health", (req, res) => {
-  res.status(200).send("I'm OK!");
+  res.status(200).send("OK!");
 });
 
-app.use(authRouter);
+app.use( userRouter);
 app.use("/credentials", credentialRouter);
 
 app.use(errorHandler);

@@ -55,8 +55,10 @@ async function signIn(loginData: UserSignInData): Promise<string> {
   }
 
   const tokenPayload = { userId: user.id };
-  const tokenOptions: jwt.SignOptions = { expiresIn: process.env.JWT_EXPIRES_IN || "1d" };
-
+  const tokenOptions: jwt.SignOptions = {
+    expiresIn: (process.env.JWT_EXPIRES_IN || "1d") as jwt.SignOptions["expiresIn"]
+  };
+  
   const token = jwt.sign(tokenPayload, jwtSecret, tokenOptions);
 
   return token;

@@ -7,11 +7,16 @@ import {
   CredentialResponseData,
   CredentialUpdateRequestData,
 } from "../types/credentialTypes";
-import { Credential } from "@prisma/client";
 
-async function createCredential(userId: number, data: CredentialCreationRequestData): Promise<void> {
+async function createCredential(
+  userId: number,
+  data: CredentialCreationRequestData
+): Promise<void> {
   const { title, url, username, password } = data;
-  const existingByTitle = await credentialRepository.findByTitleAndUserId(userId, title);
+  const existingByTitle = await credentialRepository.findByTitleAndUserId(
+    userId,
+    title
+  );
   if (existingByTitle) {
     throwError("conflict", "Credential title already in use for this user.");
   }
@@ -25,14 +30,19 @@ async function createCredential(userId: number, data: CredentialCreationRequestD
   await credentialRepository.insert(userId, repoData);
 }
 
-async function getAllCredentials(userId: number): Promise<CredentialResponseData[]> {
+async function getAllCredentials(
+  userId: number
+): Promise<CredentialResponseData[]> {
   const credentials = await credentialRepository.findAllByUserId(userId);
   const responseData = credentials.map((cred): CredentialResponseData => {
     let decryptedPassword: string | undefined = undefined;
     try {
       decryptedPassword = cryptr.decrypt(cred.password);
     } catch (error) {
-      console.error(`Error decrypting password for credential ID ${cred.id}:`, error);
+      console.error(
+        `Error decrypting password for credential ID ${cred.id}:`,
+        error
+      );
     }
     return {
       id: cred.id,
@@ -48,8 +58,14 @@ async function getAllCredentials(userId: number): Promise<CredentialResponseData
   return responseData;
 }
 
-async function getCredentialById(userId: number, credentialId: number): Promise<CredentialResponseData> {
-  const credential = await credentialRepository.findByIdAndUserId(credentialId, userId);
+async function getCredentialById(
+  userId: number,
+  credentialId: number
+): Promise<CredentialResponseData> {
+  const credential = await credentialRepository.findByIdAndUserId(
+    credentialId,
+    userId
+  );
   if (!credential) {
     throwError("not_found", "Credential not found or access denied.");
   }
@@ -57,7 +73,10 @@ async function getCredentialById(userId: number, credentialId: number): Promise<
   try {
     decryptedPassword = cryptr.decrypt(credential.password);
   } catch (error) {
-    console.error(`Error decrypting password for credential ID ${credential.id}:`, error);
+    console.error(
+      `Error decrypting password for credential ID ${credential.id}:`,
+      error
+    );
   }
   const responseData: CredentialResponseData = {
     id: credential.id,
@@ -77,14 +96,21 @@ async function updateCredential(
   credentialId: number,
   data: CredentialUpdateRequestData
 ): Promise<void> {
-  const existingCredential = await credentialRepository.findByIdAndUserId(credentialId, userId);
+  const existingCredential = await credentialRepository.findByIdAndUserId(
+    credentialId,
+    userId
+  );
   if (!existingCredential) {
     throwError("not_found", "Credential not found or access denied.");
   }
   if (data.title && data.title !== existingCredential.title) {
-    const conflictingCredential = await credentialRepository.findByTitleAndUserId(userId, data.title);
+    const conflictingCredential =
+      await credentialRepository.findByTitleAndUserId(userId, data.title);
     if (conflictingCredential && conflictingCredential.id !== credentialId) {
-      throwError("conflict", "New credential title already in use by this user.");
+      throwError(
+        "conflict",
+        "New credential title already in use by this user."
+      );
     }
   }
   const dataToUpdate: Partial<CredentialRepoData> = {};
@@ -105,8 +131,14 @@ async function updateCredential(
   }
 }
 
-async function deleteCredential(userId: number, credentialId: number): Promise<void> {
-  const credential = await credentialRepository.findByIdAndUserId(credentialId, userId);
+async function deleteCredential(
+  userId: number,
+  credentialId: number
+): Promise<void> {
+  const credential = await credentialRepository.findByIdAndUserId(
+    credentialId,
+    userId
+  );
   if (!credential) {
     throwError("not_found", "Credential not found or access denied.");
   }
